@@ -24,6 +24,20 @@ local footPatrols, maxFootPatrols = 0, 3
 local carPatrols, maxCarPatrols = 0, 10
 local bousculadeCounts = {}
 
+-- Préchargement des modèles
+for _, model in ipairs(policeModels) do
+    RequestModel(model)
+end
+for _, model in ipairs(swatModels) do
+    RequestModel(model)
+end
+for _, car in ipairs(policeCars) do
+    RequestModel(GetHashKey(car))
+end
+for _, car in ipairs(swatCars) do
+    RequestModel(GetHashKey(car))
+end
+
 -- Fonction simulée pour obtenir les véhicules possédés par un joueur
 local function GetOwnedVehicles(player)
     return { { plate = "ABC123" }, { plate = "XYZ789" } }
@@ -164,9 +178,6 @@ local function callSWAT()
         local swatModel = swatModels[math.random(#swatModels)]
         local swatCar = GetHashKey(swatCars[math.random(#swatCars)])
 
-        RequestModel(swatModel)
-        RequestModel(swatCar)
-
         while not HasModelLoaded(swatModel) or not HasModelLoaded(swatCar) do
             Citizen.Wait(0)
         end
@@ -267,10 +278,6 @@ local function createPatrol(patrolType)
     local model2 = policeModels[math.random(#policeModels)]
     local carModel = patrolType == "car" and GetHashKey(policeCars[math.random(#policeCars)]) or nil
 
-    RequestModel(model1)
-    RequestModel(model2)
-    if carModel then RequestModel(carModel) end
-
     while not HasModelLoaded(model1) or not HasModelLoaded(model2) or (carModel and not HasModelLoaded(carModel)) do
         Citizen.Wait(0)
     end
@@ -341,27 +348,11 @@ Citizen.CreateThread(function()
         Citizen.Wait(100)
 
         local playerPed = PlayerPedId()
-        if IsPedInMeleeCombat(playerPed) then
-            local targetPed = GetMeleeTargetForPed(playerPed)
-            if targetPed and IsPedPolice(targetPed) then
-                handlePoliceInteraction(playerPed, targetPed)
-            end
-        elseif IsPlayerFreeAiming(PlayerId()) and IsPedShooting(playerPed) then
-            local _, targetPed = GetEntityPlayerIsFreeAimingAt(PlayerId())
-            if targetPed and IsPedPolice(targetPed) then
-                handlePoliceInteraction(playerPed, targetPed)
-            end
-        end
-    end
-end)
-
--- Thread pour détecter le vol de voiture
-Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(100)
-
-        local playerPed = PlayerPedId()
-        if IsPedInAnyVehicle(playerPed, false) then
+        local targetPed = GetMeleeTargetForPed(playerPed) or GetEntityPlayerIsFreeAimingAt(PlayerId())
+        
+        if targetPed and IsPedPolice(targetPed) then
+            handlePoliceInteraction(playerPed, targetPed)
+        elseif IsPedInAnyVehicle(playerPed, false) then
             local vehicle = GetVehiclePedIsIn(playerPed, false)
             if not IsVehicleOwnedByPlayer(vehicle) then
                 initiatePoliceChase(playerPed)
