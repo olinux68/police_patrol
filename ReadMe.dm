@@ -2,7 +2,7 @@
 
 ## Description
 
-Ce script pour **FiveM** gère les patrouilles de police, à pied et en voiture, ainsi que les interactions des policiers avec les joueurs. Les policiers réagissent aux infractions telles que le vol de voiture et les bousculades. Ils peuvent également effectuer des contrôles aléatoires et appeler le SWAT en cas de meurtre de policier.
+Ce script pour **FiveM** gère les patrouilles de police, à pied et en voiture, ainsi que les interactions des policiers avec les joueurs. Les policiers réagissent aux infractions telles que le vol de voiture et les bousculades. Ils peuvent également effectuer des contrôles aléatoires et appeler le **SWAT** en cas de meurtre de policier.
 
 ## Fonctionnalités
 
@@ -18,4 +18,4 @@ Ce script pour **FiveM** gère les patrouilles de police, à pied et en voiture,
 
    ```plaintext
    start police_patrol
-
+Le lien `[https://servers.fivem.net/servers/detail/g98xqm]
