@@ -18,3 +18,5 @@ Ce script pour **FiveM** gère les patrouilles de police, à pied et en voiture,
 
    ```plaintext
    start police_patrol
+
+tester sur mon serveur  https://servers.fivem.net/servers/detail/g98xqm
