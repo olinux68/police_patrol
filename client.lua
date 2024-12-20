@@ -1,7 +1,7 @@
 --[[
 Auteur: olinux
 Version: 2.0
-Date: 2024-12-19
+Date: 2024-12-20
 Description: Script pour gérer les patrouilles de police (à pied et en voiture) et les interactions des policiers avec les joueurs dans FiveM.
 ]]
 
@@ -23,6 +23,7 @@ local carPatrolLocations = {
 local footPatrols, maxFootPatrols = 0, 3
 local carPatrols, maxCarPatrols = 0, 10
 local bousculadeCounts = {}
+local lastBousculadeTime = {}
 
 -- Préchargement des modèles
 for _, model in ipairs(policeModels) do
@@ -151,17 +152,24 @@ end
 -- Fonction pour gérer les bousculades
 local function handleBousculade(playerPed, policePed)
     local playerId = GetPlayerServerId(NetworkGetEntityOwner(playerPed))
-    bousculadeCounts[playerId] = (bousculadeCounts[playerId] or 0) + 1
-    print("Bousculade count for player " .. playerId .. ": " .. bousculadeCounts[playerId])
+    local currentTime = GetGameTimer()
 
-    -- Annonce de la bousculade au joueur
-    TriggerEvent('chat:addMessage', { args = { 'Police', 'Vous avez bousculé un policier!' } })
+    -- Vérifier s'il y a eu une bousculade récemment pour éviter les détections multiples
+    if not lastBousculadeTime[playerId] or currentTime - lastBousculadeTime[playerId] > 5000 then
+        bousculadeCounts[playerId] = (bousculadeCounts[playerId] or 0) + 1
+        lastBousculadeTime[playerId] = currentTime
 
-    disablePoliceAggression(policePed)
+        print("Bousculade count for player " .. playerId .. ": " .. bousculadeCounts[playerId])
 
-    if bousculadeCounts[playerId] >= 3 then
-        print("Player " .. playerId .. " has bousculé a police officer 3 times. Arresting player.")
-        arrestPlayerByPolice(playerPed, policePed)
+        -- Annonce de la bousculade au joueur
+        TriggerEvent('chat:addMessage', { args = { 'Police', 'Vous avez bousculé un policier!' } })
+
+        disablePoliceAggression(policePed)
+
+        if bousculadeCounts[playerId] >= 3 then
+            print("Player " .. playerId .. " has bousculé a police officer 3 times. Arresting player.")
+            arrestPlayerByPolice(playerPed, policePed)
+        end
     end
 end
 
@@ -348,10 +356,25 @@ Citizen.CreateThread(function()
         Citizen.Wait(100)
 
         local playerPed = PlayerPedId()
-        local targetPed = GetMeleeTargetForPed(playerPed) or GetEntityPlayerIsFreeAimingAt(PlayerId())
-        
-        if targetPed and IsPedPolice(targetPed) then
-            handlePoliceInteraction(playerPed, targetPed)
+        local playerCoords = GetEntityCoords(playerPed)
+        local policePeds = GetNearbyPolicePeds(playerCoords, 2.0) -- Rayon de 2 unités pour détecter les bousculades
+
+        for _, policePed in ipairs(policePeds) do
+            if IsPedPolice(policePed) and HasEntityCollidedWithAnything(policePed) then
+                handleBousculade(playerPed, policePed)
+            end
+        end
+
+        if IsPedInMeleeCombat(playerPed) then
+            local targetPed = GetMeleeTargetForPed(playerPed)
+            if targetPed and IsPedPolice(targetPed) then
+                handlePoliceInteraction(playerPed, targetPed)
+            end
+        elseif IsPlayerFreeAiming(PlayerId()) and IsPedShooting(playerPed) then
+            local _, targetPed = GetEntityPlayerIsFreeAimingAt(PlayerId())
+            if targetPed and IsPedPolice(targetPed) then
+                handlePoliceInteraction(playerPed, targetPed)
+            end
         elseif IsPedInAnyVehicle(playerPed, false) then
             local vehicle = GetVehiclePedIsIn(playerPed, false)
             if not IsVehicleOwnedByPlayer(vehicle) then
