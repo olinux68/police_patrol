@@ -1,77 +1,84 @@
-# FiveM Police Patrol Script
+# Police Patrol Resource
 
 ## Description
 
-Ce script pour **FiveM** gère les patrouilles de police, à pied et en voiture, ainsi que les interactions des policiers avec les joueurs. Les policiers réagissent aux infractions telles que le vol de voiture et les bousculades. Ils peuvent également effectuer des contrôles aléatoires et appeler le **SWAT** en cas de meurtre de policier.
-
-## Fonctionnalités
-
-- **Patrouilles de police** : Les policiers peuvent patrouiller à pied ou en voiture.
-- **Réactions aux infractions** : Réactions automatiques aux vols de voiture et aux bousculades.
-- **Contrôles aléatoires** : Les policiers effectuent des contrôles de sécurité aléatoires.
-- **Appel du SWAT** : En cas de meurtre de policier, le SWAT peut être appelé en renfort.
-- **Gestion des interactions** : Gestion des interactions avec les joueurs, y compris les arrestations et les poursuites.
-- **Blips sur la carte** : Création de blips sur la carte pour les véhicules de police en patrouille.
-- **Optimisation des ressources** : Utilisation efficace des ressources pour éviter les fuites de mémoire.
+Cette ressource gère les patrouilles de police, les poursuites de voleurs de voiture et les interactions avec les joueurs dans le jeu GTA V via FiveM. Elle inclut des fonctionnalités pour créer des patrouilles à pied et en voiture, détecter les vols de voiture, et gérer les arrestations et les poursuites.
 
 ## Installation
 
-1. Téléchargez le script et placez-le dans le dossier `resources` de votre serveur **FiveM**.
+1. Clonez ce dépôt dans votre répertoire `resources` de votre serveur FiveM.
 2. Ajoutez la ligne suivante à votre fichier `server.cfg` :
-
-   ```plaintext
-   start police_patrol
-Je m'excuse pour la confusion précédente. Voici le fichier `ReadMe.md` complet avec toutes les informations compilées en un seul fichier en Markdown, sans coupures :
-
-```markdown
-# FiveM Police Patrol Script
-
-## Description
-
-Ce script pour **FiveM** gère les patrouilles de police, à pied et en voiture, ainsi que les interactions des policiers avec les joueurs. Les policiers réagissent aux infractions telles que le vol de voiture et les bousculades. Ils peuvent également effectuer des contrôles aléatoires et appeler le **SWAT** en cas de meurtre de policier.
-
-## Fonctionnalités
-
-- **Patrouilles de police** : Les policiers peuvent patrouiller à pied ou en voiture.
-- **Réactions aux infractions** : Réactions automatiques aux vols de voiture et aux bousculades.
-- **Contrôles aléatoires** : Les policiers effectuent des contrôles de sécurité aléatoires.
-- **Appel du SWAT** : En cas de meurtre de policier, le SWAT peut être appelé en renfort.
-- **Gestion des interactions** : Gestion des interactions avec les joueurs, y compris les arrestations et les poursuites.
-- **Blips sur la carte** : Création de blips sur la carte pour les véhicules de police en patrouille.
-- **Optimisation des ressources** : Utilisation efficace des ressources pour éviter les fuites de mémoire.
-
-## Installation
-
-1. Téléchargez le script et placez-le dans le dossier `resources` de votre serveur **FiveM**.
-2. Ajoutez la ligne suivante à votre fichier `server.cfg` :
-
-   ```plaintext
-   start police_patrol
+   ```
+   ensure police_patrol
    ```
 
 ## Configuration
 
-Le fichier 
+Le fichier `config.lua` contient les paramètres de configuration pour cette ressource. Vous pouvez ajuster les modèles de police, les emplacements de patrouille, et d'autres paramètres selon vos besoins.
 
-config.lua
+## Scripts
 
- permet de configurer les différents aspects du script :
+### Client Scripts
 
-- **Modèles de policiers** : Configurer les modèles de policiers et de SWAT.
-- **Véhicules de police** : Configurer les véhicules de police et de SWAT.
-- **Emplacements des patrouilles** : Définir les emplacements des patrouilles à pied et en voiture.
-- **Limites de patrouille** : Définir le nombre maximum de patrouilles à pied et en voiture.
+- `client.lua` : Script principal pour gérer les interactions et les événements côté client.
+- `chase.lua` : Script pour gérer les poursuites de voleurs de voiture et les arrestations.
+- `utils.lua` : Fonctions utilitaires pour diverses opérations, telles que la création de blips et la détection de vols de voiture.
+- `interaction.lua` : Script pour gérer les interactions spécifiques avec les joueurs.
+- `patrols.lua` : Script pour gérer la création et la gestion des patrouilles de police.
+- `test.lua` : Script de test pour vérifier les fonctionnalités de patrouille.
+
+### Server Scripts
+
+- `server.lua` : Script principal pour gérer les événements côté serveur, tels que les alertes de vol de voiture et les envois en prison.
+
+## Fonctionnalités
+
+### Patrouilles de Police
+
+- Création de patrouilles à pied et en voiture.
+- Gestion des patrouilles avec des limites maximales configurables.
+- Suppression automatique des patrouilles après un certain temps.
+
+### Poursuites de Voleurs de Voiture
+
+- Détection des vols de voiture et déclenchement de poursuites par la police.
+- Comportement agressif de la police lors des poursuites.
+- Arrestation des voleurs de voiture et envoi en prison.
+
+### Interactions et Événements
+
+- Gestion des interactions avec les joueurs, telles que les bousculades et les combats.
+- Détection des morts de PNJ et des joueurs, avec drop d'objets configurables.
+- Création de blips sur la carte pour les patrouilles et les objets droppés.
 
 ## Utilisation
 
-Le script inclut plusieurs fonctions et événements pour gérer les patrouilles et les interactions :
+### Démarrer et Arrêter les Patrouilles
 
-- **Démarrer les patrouilles** : Utilisez l'événement `police:startPatrols` pour démarrer toutes les patrouilles.
-- **Arrêter les patrouilles** : Utilisez l'événement `police:stopPatrols` pour arrêter toutes les patrouilles.
-- **Interactions** : Les policiers réagissent automatiquement aux infractions et peuvent effectuer des contrôles aléatoires.
-
-## Lien utile
-
-Pour plus d'informations et de support, visitez le lien suivant : [https://servers.fivem.net/servers/detail/g98xqm]
+Pour démarrer les patrouilles, utilisez l'événement suivant :
+```lua
+TriggerEvent('police:startPatrols')
 ```
 
+Pour arrêter les patrouilles, utilisez l'événement suivant :
+```lua
+TriggerEvent('police:stopPatrols')
+```
+
+### Détection de Vol de Voiture
+
+Le script détecte automatiquement les vols de voiture et déclenche une alerte à la police. Vous pouvez ajuster la logique de détection dans le fichier `utils.lua`.
+
+### Arrestation et Envoi en Prison
+
+Lorsqu'un joueur est arrêté par la police, il est automatiquement envoyé en prison pour une durée configurable. Vous pouvez ajuster la logique d'arrestation et d'envoi en prison dans les fichiers `chase.lua` et `server.lua`.
+
+## Contribuer
+
+Les contributions sont les bienvenues ! Si vous avez des suggestions ou des améliorations, n'hésitez pas à ouvrir une issue ou à soumettre une pull request.
+
+## Licence
+
+Cette ressource est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+```
+```
