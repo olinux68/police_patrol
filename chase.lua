@@ -85,11 +85,18 @@ function arrestPlayer(playerPed)
                 TaskLeaveVehicle(playerPed, GetVehiclePedIsIn(playerPed, false), 16)
                 Citizen.Wait(2000) -- Attendre que le joueur sorte du véhicule
             end
+            TaskAimGunAtEntity(policePed, playerPed, -1, true)
+            Citizen.Wait(2000) -- Attendre que le policier menace le joueur
             TaskArrestPed(policePed, playerPed)
             Citizen.Wait(2000) -- Attendre que l'arrestation soit terminée
             TriggerServerEvent('police:sendToJail', GetPlayerServerId(NetworkGetEntityOwner(playerPed)))
         end
     end
+end
+
+-- Fonction pour vérifier si le véhicule est arrêté
+function isVehicleStopped(vehicle)
+    return GetEntitySpeed(vehicle) < 0.1
 end
 
 -- Thread pour gérer l'arrestation du joueur
@@ -102,7 +109,7 @@ Citizen.CreateThread(function()
 
         if wantedLevel > 0 and IsPedInAnyVehicle(playerPed, false) then
             local vehicle = GetVehiclePedIsIn(playerPed, false)
-            if not IsVehicleOwnedByPlayer(vehicle) then
+            if not IsVehicleOwnedByPlayer(vehicle) and isVehicleStopped(vehicle) then
                 arrestPlayer(playerPed)
             end
         end

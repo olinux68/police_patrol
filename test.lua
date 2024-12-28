@@ -37,6 +37,7 @@ function createPatrol(patrolType)
         if not IsEntityVisible(ped1) then SetEntityVisible(ped1, true) end
         if not IsEntityVisible(ped2) then SetEntityVisible(ped2, true) end
     else
+        print("Creating vehicle patrol at coordinates: ", loc.x, loc.y, loc.z)
         vehicle = CreateVehicle(carModel, loc.x, loc.y, loc.z, loc.heading or 0.0, true, false)
         ped1 = CreatePedInsideVehicle(vehicle, 4, model1, -1, true, false)
         ped2 = CreatePedInsideVehicle(vehicle, 4, model2, 0, true, false)

@@ -44,7 +44,7 @@ end)
 
 RegisterServerEvent('police:carTheftAlert')
 AddEventHandler('police:carTheftAlert', function(coords)
-    TriggerClientEvent('police:startCarChase', -1, coords)
+    TriggerClientEvent('police:carTheftAlert', -1, coords)
 end)
 
 RegisterServerEvent('police:sendToJail')
